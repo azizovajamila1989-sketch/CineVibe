@@ -1,0 +1,407 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CineVibe</title>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600;9..144,700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#07050d;--panel:#130d1d;--accent:#d4a548;--accent2:#f0cf86;--velvet:#a23a62;--text:#f6f1e7;--dim:#9d92a6;--line:rgba(246,241,231,.09);--danger:#ee5a74;--f:'Fraunces',Georgia,serif}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:radial-gradient(900px 500px at 10% -5%,rgba(162,58,98,.30),transparent 60%),radial-gradient(700px 500px at 100% 0,rgba(212,165,72,.12),transparent 55%),var(--bg);background-attachment:fixed;color:var(--text);font-family:Inter,system-ui,sans-serif;display:flex;min-height:100vh}
+button{font-family:inherit;cursor:pointer}
+.sidebar{width:236px;background:rgba(13,9,22,.85);border-right:1px solid var(--line);padding:22px 14px;position:sticky;top:0;height:100vh;overflow-y:auto;flex-shrink:0;display:flex;flex-direction:column}
+.logo{display:flex;align-items:center;gap:10px;font:600 23px var(--f);padding:0 8px 24px;cursor:pointer}
+.logo i{width:32px;height:32px;border-radius:10px;background:linear-gradient(135deg,var(--accent),var(--velvet));display:grid;place-items:center;font-style:normal;font-size:13px;color:#0a0710;box-shadow:0 6px 18px rgba(212,165,72,.4)}
+.nav-item{display:flex;align-items:center;gap:12px;padding:10px 12px;border-radius:10px;color:var(--dim);font-size:14px;cursor:pointer;margin-bottom:2px;border-left:2px solid transparent;transition:.15s}
+.nav-item:hover{background:rgba(255,255,255,.05);color:var(--text)}
+.nav-item.active{background:linear-gradient(90deg,rgba(212,165,72,.18),transparent);border-left-color:var(--accent);color:#fff}
+.nav-item .count{margin-left:auto;font-size:11px;background:rgba(255,255,255,.08);padding:2px 8px;border-radius:10px}
+.nav-label{font-size:11px;color:var(--dim);padding:0 12px;margin:18px 0 8px;letter-spacing:.8px;text-transform:uppercase}
+.side-foot{margin-top:auto;padding:14px 10px;font:italic 14px/1.4 var(--f);color:var(--accent2)}
+.main{flex:1;min-width:0}
+.topbar{display:flex;align-items:center;gap:14px;padding:16px 32px;position:sticky;top:0;z-index:20;background:rgba(7,5,13,.8);backdrop-filter:blur(16px);border-bottom:1px solid var(--line)}
+.search{flex:1;display:flex;align-items:center;gap:10px;background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:11px 16px;transition:.15s}
+.search:focus-within{border-color:rgba(212,165,72,.6);box-shadow:0 0 0 4px rgba(212,165,72,.1)}
+.search input{background:none;border:0;outline:0;color:var(--text);font-size:14px;width:100%}
+.ibtn{height:40px;padding:0 16px;border-radius:20px;background:var(--panel);border:1px solid var(--line);color:var(--text);font-size:13px;white-space:nowrap;transition:.15s}
+.ibtn:hover{border-color:var(--accent)}
+.btn{background:linear-gradient(90deg,var(--accent),var(--velvet));color:#16090e;border:0;padding:12px 24px;border-radius:24px;font-weight:700;font-size:14px;display:inline-flex;align-items:center;gap:8px;transition:.15s;text-decoration:none}
+.btn:hover{transform:translateY(-2px);box-shadow:0 10px 24px rgba(212,165,72,.3)}
+.btn.ghost{background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.18);color:#fff}
+.btn.ghost:hover{box-shadow:none;background:rgba(255,255,255,.14)}
+.btn.fav{background:rgba(238,90,116,.2);border-color:rgba(238,90,116,.6);color:#ffb0bf}
+.mnav{display:none;gap:8px;overflow-x:auto;padding:12px 16px 0}
+.mnav .chip{flex-shrink:0}
+.content{padding:26px 32px 70px}
+.hero{position:relative;height:500px;border-radius:26px;overflow:hidden;margin-bottom:38px;border:1px solid var(--line);box-shadow:0 30px 70px -25px #000}
+.slide{position:absolute;inset:0;opacity:0;transition:opacity .8s;display:flex;align-items:flex-end}
+.slide.on{opacity:1}
+.slide img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center 20%;animation:kb 14s ease-out forwards}
+@keyframes kb{from{transform:scale(1.02)}to{transform:scale(1.12)}}
+.slide:after{content:"";position:absolute;inset:0;background:linear-gradient(90deg,rgba(7,5,13,.97) 18%,rgba(7,5,13,.5) 55%,rgba(7,5,13,.05)),linear-gradient(0deg,rgba(7,5,13,.7),transparent 45%)}
+.hero-in{position:relative;z-index:2;padding:48px;max-width:560px}
+.badge{display:inline-block;background:rgba(212,165,72,.15);border:1px solid rgba(212,165,72,.45);color:var(--accent2);font-size:12px;padding:5px 14px;border-radius:20px;margin-bottom:16px}
+.hero-in h1{font:700 50px/1.05 var(--f);margin-bottom:14px}
+.hero-in p{color:#d3c8d6;font-size:15px;line-height:1.6;margin-bottom:24px}
+.hero-btns{display:flex;gap:12px;flex-wrap:wrap}
+.dots{position:absolute;bottom:22px;right:36px;z-index:3;display:flex;gap:8px}
+.dots span{width:22px;height:5px;border-radius:4px;background:rgba(255,255,255,.28);cursor:pointer;transition:.2s}
+.dots span.on{background:var(--accent2);width:34px}
+.sec{margin-bottom:34px}
+.sec-h{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px}
+.sec-h h2{font:600 22px var(--f)}
+.link{color:var(--accent2);font-size:13px;cursor:pointer}
+.link:hover{text-decoration:underline}
+.scroller{display:flex;gap:16px;overflow-x:auto;padding:6px 4px 14px;scroll-snap-type:x proximity;scrollbar-width:thin;scrollbar-color:#3a2d4d transparent}
+.scroller .card{width:170px;flex-shrink:0;scroll-snap-align:start}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(168px,1fr));gap:18px}
+.card{position:relative;aspect-ratio:2/3;border-radius:14px;overflow:hidden;background:var(--panel);cursor:pointer;border:1px solid var(--line);transition:transform .3s cubic-bezier(.2,.8,.2,1),box-shadow .3s,border-color .3s}
+.card:hover{transform:translateY(-8px) scale(1.02);border-color:rgba(212,165,72,.5);box-shadow:0 22px 40px -12px #000,0 0 30px -8px rgba(212,165,72,.4)}
+.card img{width:100%;height:100%;object-fit:cover;display:block;transition:transform .6s}
+.card:hover img{transform:scale(1.07)}
+.card .ov{position:absolute;inset:0;background:rgba(7,5,13,.5);display:grid;place-items:center;opacity:0;transition:.25s}
+.card:hover .ov{opacity:1}
+.play{width:54px;height:54px;border-radius:50%;border:0;background:linear-gradient(135deg,var(--accent2),var(--accent));color:#16090e;font-size:18px;box-shadow:0 8px 24px rgba(0,0,0,.5);transition:.2s}
+.play:hover{transform:scale(1.12)}
+.fb{position:absolute;top:9px;right:9px;z-index:2;width:32px;height:32px;border-radius:50%;background:rgba(7,5,13,.65);backdrop-filter:blur(6px);border:1px solid rgba(255,255,255,.18);color:#fff;font-size:15px;display:grid;place-items:center}
+.fb.on{background:var(--danger);border-color:transparent}
+.tag{position:absolute;top:9px;left:9px;z-index:2;font-size:10px;font-weight:700;letter-spacing:.5px;padding:3px 8px;border-radius:6px;background:rgba(7,5,13,.7);color:var(--accent2);border:1px solid rgba(212,165,72,.35)}
+.info{position:absolute;left:0;right:0;bottom:0;padding:30px 11px 10px;background:linear-gradient(transparent,rgba(5,3,9,.95))}
+.info b{display:block;font-size:13px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.info span{font-size:11px;color:var(--dim)}
+.vh{display:flex;justify-content:space-between;align-items:flex-end;gap:16px;flex-wrap:wrap;margin-bottom:20px}
+.vh h1{font:700 30px var(--f)}
+.vh .sub{color:var(--dim);font-size:13px;margin-top:4px}
+select{background:var(--panel);color:var(--text);border:1px solid var(--line);border-radius:12px;padding:9px 14px;font-size:13px;outline:0}
+.chips{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:20px}
+.chip{padding:8px 16px;border-radius:20px;background:var(--panel);border:1px solid var(--line);color:var(--dim);font-size:13px;cursor:pointer;transition:.15s}
+.chip:hover{color:var(--text);border-color:rgba(212,165,72,.45)}
+.chip.on{background:linear-gradient(90deg,var(--accent),var(--velvet));color:#16090e;font-weight:700;border-color:transparent}
+.gg{display:grid;grid-template-columns:repeat(auto-fill,minmax(190px,1fr));gap:16px}
+.gt{padding:28px 20px;border-radius:16px;background:linear-gradient(135deg,rgba(212,165,72,.16),rgba(19,13,29,.6));border:1px solid var(--line);cursor:pointer;transition:.2s}
+.gt:hover{transform:translateY(-4px);border-color:var(--accent2)}
+.gt .i{font-size:28px;margin-bottom:10px}.gt b{display:block;font-size:17px}.gt span{font-size:12px;color:var(--dim)}
+.empty{text-align:center;padding:70px 20px;color:var(--dim)}.empty .big{font-size:42px;margin-bottom:10px}.empty .btn{margin-top:18px}
+.mo{position:fixed;inset:0;background:rgba(4,2,8,.88);backdrop-filter:blur(8px);display:none;align-items:center;justify-content:center;z-index:100;padding:18px;overflow-y:auto}
+.mo.open{display:flex}
+.mb{width:100%;max-width:920px;max-height:92vh;overflow-y:auto;background:#0e0916;border:1px solid var(--line);border-radius:20px;box-shadow:0 40px 90px -20px #000;position:relative;animation:pop .25s ease}
+@keyframes pop{from{opacity:0;transform:translateY(20px) scale(.98)}}
+.x{position:absolute;top:14px;right:14px;z-index:5;width:36px;height:36px;border-radius:50%;border:0;background:rgba(0,0,0,.6);color:#fff;font-size:16px}
+.x:hover{background:rgba(255,255,255,.2)}
+.vid{position:relative;padding-top:50%;background:#000;overflow:hidden}
+.vid img,.vid iframe{position:absolute;inset:0;width:100%;height:100%;border:0;object-fit:cover;object-position:center 20%}
+.vid:after{content:"";position:absolute;inset:0;background:linear-gradient(0deg,#0e0916,transparent 60%);pointer-events:none}
+.vid.live:after{display:none}
+.vid .play{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);z-index:2;width:76px;height:76px;font-size:26px}
+.det{padding:6px 30px 30px}
+.det h2{font:700 32px var(--f);margin-bottom:8px}
+.meta{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:18px}
+.meta span{font-size:12px;padding:4px 12px;border-radius:14px;background:rgba(255,255,255,.07);color:var(--accent2)}
+.acts{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:26px}
+.det h3{font:600 18px var(--f);margin-bottom:12px}
+#login .mb{max-width:390px}
+#login form{padding:26px}#login h3{font:700 22px var(--f);margin-bottom:16px}
+.fld{margin-bottom:14px}.fld label{display:block;font-size:12px;color:var(--dim);margin-bottom:6px}
+.fld input{width:100%;padding:12px 14px;border-radius:12px;background:var(--panel);border:1px solid var(--line);color:var(--text);outline:0}
+.fld input:focus{border-color:var(--accent2)}
+#toast{position:fixed;bottom:26px;left:50%;transform:translate(-50%,20px);background:#1c1426;border:1px solid var(--line);padding:12px 20px;border-radius:14px;font-size:13px;opacity:0;pointer-events:none;transition:.25s;z-index:200}
+#toast.show{opacity:1;transform:translate(-50%,0)}
+@media(max-width:900px){.sidebar{display:none}.mnav{display:flex}.content{padding:18px 16px 60px}.topbar{padding:12px 16px}.hero{height:380px}.hero-in{padding:26px}.hero-in h1{font-size:32px}.det{padding:6px 18px 24px}.scroller .card{width:140px}#authBtn{display:none}}
+</style>
+</head>
+<body>
+<aside class="sidebar">
+  <div class="logo" onclick="goTo('home')"><i>▶</i>CineVibe</div>
+  <div id="mainNav"></div>
+  <div class="nav-label">Janrlar</div>
+  <div id="genreNav"></div>
+  <div class="side-foot">Yaxshi filmlar — yaxshi kayfiyat uchun!</div>
+</aside>
+<main class="main">
+  <div class="topbar">
+    <div class="search">🔍<input id="q" placeholder="Film, serial yoki janr qidiring..."><span id="qx" style="display:none;cursor:pointer;color:var(--dim)" onclick="clearSearch()">✕</span></div>
+    <button class="ibtn" onclick="randomMovie()">🎲 Tasodifiy</button>
+    <button class="ibtn" id="authBtn" onclick="openLogin()">Kirish</button>
+  </div>
+  <div class="mnav" id="mnav"></div>
+  <div class="content" id="content"></div>
+</main>
+
+<div class="mo" id="detail"><div class="mb" id="detailBox"></div></div>
+<div class="mo" id="login"><div class="mb">
+  <button class="x" onclick="closeLogin()">✕</button>
+  <form onsubmit="return submitLogin(event)">
+    <h3>Tizimga kirish</h3>
+    <div class="fld"><label>Ism</label><input id="ln" placeholder="Ismingiz" required></div>
+    <div class="fld"><label>Email</label><input type="email" placeholder="siz@misol.com" required></div>
+    <div class="fld"><label>Parol</label><input type="password" placeholder="••••••••" required></div>
+    <button class="btn" style="width:100%;justify-content:center">Kirish</button>
+    <p style="text-align:center;font-size:12px;color:var(--dim);margin-top:12px">Demo — ma'lumotlar yuborilmaydi.</p>
+  </form>
+</div></div>
+<div id="toast"></div>
+
+<script>
+/* Format: Nomi|yil|janr|tur(m=film,s=serial)|poster|youtube_id
+   Poster: TMDB yo'li (".jpg"siz). YouTube ID ni o'zgartirsangiz — shu video ochiladi. */
+const G={A:["Aksiya","🔥"],D:["Drama","🎭"],K:["Komediya","😄"],T:["Triller","🎯"],F:["Fantastika","🚀"],H:["Horror","👻"],N:["Anime","⭐"]};
+const RAW=`Interstellar|2014|F|m|gEU2QniE6E77NI6lCU6MxlNBvIx|zSWdZVtXT7E
+The Batman|2022|A|m|74xTEgt7R36Fpooo50r9T25onhq|mqqft2x_Aa4
+Dune|2021|F|m|d5NXSklXo0qyIYkgV94XAgMIckC|n9xhJrPXop4
+Inception|2010|T|m|9gk7adHYeDvHkCSEqAvQNLV5Uge|YoHD9XEInc0
+The Avengers|2012|A|m|RYMX2wcKCBAr24UyPD7xwmjaTn|eOrNdBpGMv8
+Joker|2019|D|m|udDclJoHjfjb8Ekgsd4FDteOkCU|zAGVQLHvwOY
+John Wick|2014|A|m|foWyDVqzGiUxHkzUfyfEZgvOxlS|C0BMx-qxsP4
+Top Gun: Maverick|2022|A|m|62HCnUTziyWcpDaBO2i1DX17ljH|giXco2jaZ_4
+Oppenheimer|2023|D|m|8Gxv8gSFCU0XGDykEGv7zR1n2ua|uYPbbksJxIg
+Barbie|2023|K|m|iuFNMS8U5cb6xfzi51Dbkovj7vM|pBk4NYhWNMM
+Spider-Man: No Way Home|2021|F|m|1g0dhYtq4irTY1GPXvft6k4YLjm|JfVOs4VSpmA
+The Dark Knight|2008|A|m|qJ2tW6WMUDux911r6m7haRef0WH|EXeTwQWrcwY
+Avatar: The Way of Water|2022|F|m|t6HIqrRAclMCA60NsSmeqe9RmNV|d9MyW72ELq0
+Parasite|2019|D|m|7IiTTgloJzvGI1TAYymCfbfl3vT|5xH0HfJHsaY
+Titanic|1997|D|m|9xjZS2rlVxm8SFx8kPC3aIGCOYQ|2e-eXJ6HgkQ
+La La Land|2016|K|m|uDO8zWDhfWwoFdKS4fzkUJt0Rf0|0pdqf4P9MB8
+Django Unchained|2012|D|m|7oWY8VDWW7thTzWh3OKYRkWUlD5|_iH0UBYDI4g
+The Wolf of Wall Street|2013|D|m|34m2tygAYBGqA9MXKhRDtzYd4MR|iszwuX1AK6A
+It|2017|H|m|9E2y5Q7WlCVNEhP5GiVTjhEhx1o|xKM5t943iFY
+The Conjuring|2013|H|m|wVYREutTvI2tmxr6ujrHT704wGF|k10ETZ41q5o
+Your Name|2016|N|m|q719jXXEzOoYaps6babgKnONONX|3KR8_igjnRs
+Breaking Bad|2008|D|s|ggFHVNu6YYI5L9pCfOacjizRGt|HhesaQXLuRY
+Stranger Things|2016|D|s|49WJfeN0moxb9IPfGn8AIqMGskD|b9EkMc79ZSU
+The Last of Us|2023|D|s|uKvVjHNqB5VmOrdxqAt2F7J78ED|uLtkt8BonwM
+Wednesday|2022|F|s|9PFonBhy4cQy7Jz20NpMygczOkv|Di310WS8zLk
+Money Heist|2017|T|s|reEMJA1uzscCbkpeRJeTT2bjqUp|_InqQJRqGW4
+Peaky Blinders|2013|D|s|vUUqzWa2LnHIVqkaKVlVGkVcZIW|e9SCG3jipCM
+Loki|2021|F|s|kEl2t3OhXc3Zb9FBh1AuYzRTgZp|nW948Va-l10
+The Witcher|2019|F|s|7vjaCdMw15FEbXyLQTVa04URsPm|P0oJqfLzZzY
+Squid Game|2021|T|s|dDlEmu3EZ0Pgg93K2SVNLCjCSvE|oqxAJKy0ii4
+Game of Thrones|2011|D|s|1XS1oqL89opfnbLl8WnZY1O1uJx|KPLWWIOCOOQ
+House of the Dragon|2022|D|s|z2yahl2uefxDCl0nogcRBstwruJ|DotnJ7tTA34
+The Mandalorian|2019|F|s|eU1i6eHXlzMOlEq0ku1Rzq7Y4wA|aOC8E8z_ifw
+Mad Max: Fury Road|2015|A|m|hA2ple9q4qnwxp3hKVNhroipsir|hEJnMQG9ev8
+Gladiator|2000|D|m|ty8TGRuvJLPUmAR1H1nRIsgwvim|P5oXamRhb3Q
+Mission: Impossible - Fallout|2018|A|m|AkJQpZp9WoNdj7pLYSj1L0RcMMN|wb49-oV0F78
+Extraction|2020|A|m|wlfDxbGEsW58vGhFljKkcR5IxDj|L6P3nI6VnlY
+The Matrix|1999|F|m|f89U3ADr1oiB1s9GkdPOEpXUk5H|vKQi3bBA1y8
+John Wick: Chapter 2|2017|A|m|hXWBc0ioLHoJyow4YMU7WFVc9Aj|EYfXrCEd9lI
+John Wick: Chapter 3|2019|A|m|ziEuG1essDuWuC5lpWUaw1uXY2O|M7XM597XO94
+John Wick: Chapter 4|2023|A|m|vZloFAK7NmvMGKE7VkF5UHaz0I|qEVUtrk8_B4
+Kingsman: The Secret Service|2014|A|m|kxKuvwZAKym0eeQnPeIfQ1Fm4v6|m9BhVvVXVJ0
+Baby Driver|2017|A|m|rHi9WdBpDcH5CGb5r2Fz5m3rXBP|K0V8ip7XY8Y
+Edge of Tomorrow|2014|F|m|paHT6RUvvatgWLmMGXtqhb0y3sn|BdyBB2A9uT4
+300|2006|A|m|7iHl4iURXjjrEVMHnBv3s0doDNQ|C7EbW-vJ7Rc
+Die Hard|1988|A|m|yFihWxQcmqcaBR31QM6Y8gT6aYV|2TmCLQrdVCs
+The Bourne Identity|2002|T|m|omcOZLcVYE7lSJhKfMwB7c2r9GT|8bQIhaS_DlA
+Skyfall|2012|A|m|6zZeQ4ErbtWDVh0aq5Aq2Yl0jOc|C1YMXaZ9wbY
+Casino Royale|2006|A|m|2gCckWkxlZlm5xwqYTM3P1TzcaU|7HTXQ1cRvC0
+No Time to Die|2021|A|m|iUgygt3fscRoKWCV1d0C7FbM9TP|BIhNsAtPbPI
+Black Panther|2018|A|m|uxzzxijgPIY7slzFvMotPv8wjKA|xjDjIWPwcPU
+Iron Man|2008|A|m|78lPtwv72eTNqFW9COBYI0dWDJa|8ugaeA-nMTc
+Captain America: Civil War|2016|A|m|rAGiXaUfPzY7CDEyNKUofk3Kw2e|dKrVegVI0Us
+Thor: Ragnarok|2017|F|m|rzRwTcFvttcN1ZpX2xv4j3tSdJu|ue80QwXMRHg
+Guardians of the Galaxy|2014|F|m|r7vmZjiyZw9rpJMQJdXpjgiCOk9|d96cjJhvlMA
+Deadpool|2016|K|m|inVq3FRqcYIRl2la8iZikYYxFNR|Xithigfg7dA
+Logan|2017|D|m|oQoEr3ZzsuZAYVJqB2Ml9wnDsUp|Div0iP65aZo
+Wonder Woman|2017|A|m|gfJGlDaHuWimErCr5Ql0I8x9QSy|1Q8fG0TtVAY
+Man of Steel|2013|F|m|dhOD3vDVeAoDxLtT5FIVe6bH1EQ|T6DJcgm3wNY
+Aquaman|2018|A|m|xLPfCxdEnghsijzSTvj42yqhcgJ|WrjkYm5_2gU
+Furious 7|2015|A|m|ex1qeIVfLzczyDDcInsyxvHo5x5|Skpu5HaVkOc
+Uncharted|2022|A|m|rJHC1RyXxo7SGN1V5W9ijhSf95m|5dc12rBg9SU
+Bullet Train|2022|A|m|v4ROsMDNSUv6dtLQlv2fRQ4NLxs|UZFXIYVhbCk
+Forrest Gump|1994|D|m|saHP97rTPS5eLmrLQEcANmKrsFl|bLvqoHBptjg
+The Shawshank Redemption|1994|D|m|q6y0Go1tsGEsmtFryDOJo3dEmqu|6hB3S9bIaco
+The Godfather|1972|D|m|3bhkrj58Vtu7enYsRolD1fZdja1|sY1S34973zA
+Fight Club|1999|D|m|pB8BM7pdSp6B6Ih7QZ4DrQ3PmJK|qtRKdVHc-cE
+Green Book|2018|D|m|7BsvSuDQuoqhWmU2fL7W2GOcZHW|QkZ2SkPBGDY
+The Pursuit of Happyness|2006|D|m|lBXCJ8OtOAAgvNXrqlm4tqBhSSD|89Kq8SDyvSY
+A Beautiful Mind|2001|D|m|zwzWCmH72OSC5OT4CAAqxIeYCEQ|hAe_ce4V6JU
+Whiplash|2014|D|m|6uSPcdGNA2A6vJmCagXkvnutegs|7d_jQycdQGo
+1917|2019|D|m|iZf0KyrE25z1sage4SYFLCCrMi9|YqNYrYUiMfg
+The Social Network|2010|D|m|n0ybibhJtQ5icDqTp8eRytcIHJx|lB70A_dsW_0
+Marriage Story|2019|D|m|mMFwauqUXbFxaC0dsHKrxKzMEB0|y3sK3cttoOQ
+Manchester by the Sea|2016|D|m|kX7VeHqhVUCFhh8bZDlpNzWzjRs|AiVtR2ZAe7g
+Moonlight|2016|D|m|4911T5FbJ9eD2Faz5Z8cT3SUhU3|9y0quEAKC0M
+Roma|2018|D|m|aXsw1v2CU2LnA1VYt5F3GBjPtEp|NpXbHRWSY5Y
+The Irishman|2019|D|m|mbm0c5xnMAllcbFolauU5j0kbaR|1qslsxphdM4
+Nomadland|2020|D|m|gtc71fVfCQqQCk3F2iSk4b4pOAE|6sxCFZ8_d84
+CODA|2021|D|m|tp92gsslQIMSpdcaLoV0zg23kjH|c1jJmO0mSpc
+The Fabelmans|2022|D|m|2f4dLcvw3zbdYSNhI0nWLYzWlBM|D3HuvSwxCI4
+Everything Everywhere All at Once|2022|F|m|w3LxiVYdWWRvEVdn5RYq6jIqkb1|wxN1T1uxQ2g
+Good Will Hunting|1997|D|m|bABCBKYBK7A5G1x0FzoeXBJTNJd|PGO7YATNShs
+The Grand Budapest Hotel|2014|K|m|eWdyYQreja6JGCzqHWXpWHDrrPo|1Fg5iWmQjwk
+Superbad|2007|K|m|ek8e8txUyUwd2BNqj6lFEerJfbq|MRnRnUHDzUE
+The Hangover|2009|K|m|uluhlXubGu1VxU63X9VHCLWDAYP|tcdUhdOlz9M
+Knives Out|2019|T|m|pThyQovXQrw2m0s9x82twj48Jq4|qGqiHJTsRkQ
+Free Guy|2021|K|m|xoMEjrq0jV6nD6PjB5U1JgQZBAY|X2m-08cOAbc
+Jojo Rabbit|2019|K|m|7GsM4mtM0worCtIVeiQt28HieeN|tL4McUzXfFI
+Once Upon a Time in Hollywood|2019|K|m|8j58iEBw9pOXFD2L0nt0ZXeHviB|ELeMaP8EPAA
+21 Jump Street|2012|K|m|8UfMSs2sYcw4XZOZFcHy0eLGiGZ|g1PMcAsK6RE
+Zombieland|2009|K|m|AblBb2xJXK4c2fXAonAjO1JX2Vv|UcHi5f-XYLE
+Se7en|1995|T|m|6yoghtyTpznpBik8EngEmJskVUO|a6UeypmwXhw
+Gone Girl|2014|T|m|ts4c1ipJRl4EHOgFOOAtxxTIkR2|2-_-1BqXFfI
+Shutter Island|2010|T|m|4GDy0PHYX3VRXUtwK5ysFbG3jJx|KBWUiCr3nls
+Prisoners|2013|T|m|jsl94ZUfXNaNlPHFGqefjHOytzs|WVE4YFYAAy8
+Zodiac|2007|T|m|6VwMWju2ez3Yvj2Y5oJa1Uu6ncH|yPfagfSnJnI
+The Silence of the Lambs|1991|T|m|uS9m8OBk1A8eM9I042bx8XXpqAq|W6Mm8Sbe__o
+No Country for Old Men|2007|T|m|6d5XOczc226jECq0LIX0siKtgHR|38A__WT3M1A
+Nightcrawler|2014|T|m|j9HrX8f7GbZQpYBFaB4c8XoS0Gd|P24DhNmTFtE
+A Quiet Place|2018|H|m|nAU74GmpUk7t5iklEp3bufwDq4n|WR7cc5t7tv8
+Get Out|2017|H|m|1SwabTVdbn31Vjfy0staTF0OSDX|DzfpyUB60YY
+Us|2019|H|m|8UlWHLMpgZm9bx6QYh0NFoq67TZ|hDV8ETfMEfA
+The Matrix Reloaded|2003|F|m|9TGHDvWrqKBzwDxDodHYXEmOE6J|Q9wjvvSwT08
+Blade Runner 2049|2017|F|m|gajva2L0rPYkEWjzgFlBXCAVBE5|gCcx85zbxz4
+Guardians of the Galaxy Vol. 2|2017|F|m|y4MBh0EjBlMuOzv9axM4qJlmhzz|YtPCsxekpAg
+Star Wars: A New Hope|1977|F|m|6FfCtAuVAW8XJjZ7eWeLibRLWTw|vZ734NWnAHA
+Star Wars: The Force Awakens|2015|F|m|wqnLdwVXoBjKibFRR5U3y0aDUhs|sGbxmsDFVnE
+Ready Player One|2018|F|m|pU1ULUq8D3iRxl1fdX2lZIzdHuI|cSp1dM2Vj48
+Arrival|2016|F|m|x2FJsf1ElAgr63Y3PNPtJrcmpoe|tFMo3UJ4B4g
+Ex Machina|2014|F|m|btbRB7BEdvGRQTgIA0AJRXtcxg1|EoQuVnKhxaM
+Tenet|2020|F|m|k68nPLbIST6NP96JmTxmZijEvCA|L3pk_TBkihU
+The Martian|2015|F|m|5aGhaIHYuQbqlHWvWYVfM0kv0k7|ihgZ_qgD4Wc
+Doctor Strange|2016|F|m|8fCApT7XoW7GHnZGiVQzJP1cQNe|HSzx-zryEgM
+Avengers: Infinity War|2018|A|m|7WsyChQLEftFiDOVTGkv3hFpyyt|6ZfuNTqbHE8
+Avengers: Endgame|2019|A|m|or06FN3Dka5tukK1e9sl16pB3iy|TcMBFSGVi1c
+Hereditary|2018|H|m|p9fmuz2Oj3HkQ2NfC6vC1n6qJVo|V6-0kYhqoRo
+Midsommar|2019|H|m|7LEI8ulZzO5gy9Ww2NVCrsO37BH|tZoLkS4jHm4
+A Nightmare on Elm Street|1984|H|m|wGZDDzOhYW6Y3Ei8LcvGhIRgOui|CDKa5R2s21I
+The Exorcist|1973|H|m|4ucLGcXVVSVnsfkGtbLY4XAius8|YbT8xEfeEbA
+Insidious|2010|H|m|jYVh2uJ0R56tGCP2NuAmH5MZmm9|aQ3czQ1DwYQ
+Annabelle|2014|H|m|eyUcaAvcaGdCsFq0YHtEZFXhcAe|vN3vecQD9zE
+The Ring|2002|H|m|wtOWcuBHFyMHIWzhTaMuBBIRRLd|jSTvhU_69pk
+Sinister|2012|H|m|wjOFXQjXwauZTHRlixL964ZAsBl|g9BX4XcxJ4E
+Smile|2022|H|m|aPqcQwu4VGEewPhagWNncDbJ9Xp|71pkZ_yajZs
+Talk to Me|2023|H|m|kdPMUUxx7GcAf5aAG2XkjLstGjz|ihRt5AC1FTA
+Spirited Away|2001|N|m|39wmItIWsg5sZMyRUHLkWBcuVCM|ByXuk9QqQkk
+Weathering with You|2019|N|m|qgrk7r1fV52aY0ZuMmqzeasfSSs|Q6Kx1UUBEr4
+Demon Slayer: Mugen Train|2020|N|m|h8Rb9gBr48ODIwYUttZNYeMWeUU|kMxH6oZUxaQ
+Princess Mononoke|1997|N|m|cMYCDADoLKLbB83RCBUYbAHUnv2|4OiMOHRDs14
+Akira|1988|N|m|gooVsr9GnMlS6bT9tqk8FzYYtGz|UonB48qkhVc
+A Silent Voice|2016|N|m|kkAAJZmXNZWKzKvSAdgw3owuwdm|7NcRuP6dhz8
+Grave of the Fireflies|1988|N|m|qG3RYlWO6QNMreHsIrsyywzKvfw|4rGrK9YOMsY
+The Office|2005|K|s|7DJKHzAi83BmQrWLrYYOqcoKfhR|7Cd_pNOOR4Q
+Friends|1994|K|s|2koX1xLkpTQM4IZebYtLke2Sbo1|hDNNmeeJs1Q
+Better Call Saul|2015|D|s|fC2HDm5t0kHl7mTm7jxMR31b7by|keDE2Q4gXtQ
+Dark|2017|T|s|apbrbWs8M9lyOpJYU5WXrpFbk1Z|rrwycJ08PSA
+Narcos|2015|D|s|rTmal9fDbwh5F0waxhOn5cbG9Ac|xl8zdCY-oQE
+The Crown|2016|D|s|1M876KPjulVwppEpldhdc8V4o68|JWtnJjn6ng0
+Sherlock|2010|T|s|7WTsnHkbA0FaG6R9twfFde0I9hl|2Y2RalKfHzw
+Black Mirror|2011|F|s|7PRddO7z7mcPi21nZFCHW1eT3P|aQveXf9YOdg
+Chernobyl|2019|D|s|hlLXt2tOPT6RRnjiUmoxyG1LTFi|s9APLXM9Ei8
+True Detective|2014|T|s|sHFlbKS3WLqMnp9t2ghADIJFnuQ|BpKlG-nikRk
+Ozark|2017|D|s|m73QsxbXasoBRfMflVKrgYPuA5m|5nPnn6H3zQY
+Vikings|2013|D|s|bQLrHIRNEkE3PdIWQrZHynQZazu|txWnpjb4ea4
+The Boys|2019|A|s|stTEycfG9928HYGEISBFaG1ngjM|M0hCFsXaZmA
+Attack on Titan|2013|N|s|hTP1DtLGFamjfu8WqjnuYDP2H1J|MGRm4IzK1SQ
+Death Note|2006|N|s|tCZFfNVJG5b0Dg0DXFwByw0AQZ4|NlJZ-YgAt-c
+Naruto|2002|N|s|vauCEBOTt8Yh9m0midd2mvGXGtd|C4wRQvipEC0
+One Piece|1999|N|s|cMD9Ygz11zjJzAovURpO75Qg7rT|MCod-lQY9uY
+Demon Slayer|2019|N|s|xUfRZu2mi8jH6SzQEJGP6tjBuYj|VQGCKyvzIM4
+My Hero Academia|2016|N|s|ivBWDbQ8IhX0RwSK5mmYWSNiZ0G|D5aNL5aVvUo
+Jujutsu Kaisen|2020|N|s|g1TIsBOfMcqbPQ9WkbhyIsAFbb2|pkKu9hLT-t8
+Fullmetal Alchemist: Brotherhood|2009|N|s|5ZFUEOULaVml7pQuXxhpR2SmVUw|gVGsVs2mDlE
+Rick and Morty|2013|K|s|cvhE8DIH36gtxDgKYajQuxfZLKX|1Kwaq5up9DU
+Prison Break|2005|T|s|-|S0YY6xLLI4o
+24|2001|T|s|6nfJnvsRkzgHwYPHmagIkGCsYzr|tPmXjS3F9J4
+Suits|2011|D|s|9pxE7ilQ8Vym4ISU9dQPZmpMCXP|iYA5nyfvNH8
+You|2018|T|s|8fZfFcOoWmi9C6iN1H5V2xB0O5F|i1e_wDLuOJ0
+Euphoria|2019|D|s|3Q0hd3heI9GNqL5V9dCLTHhrEvE|i0p1bmr0EmE
+The Umbrella Academy|2019|F|s|nvHrPpxvR6bSjOL9WVW471HmZAB|aiXjCe1jbCE`;
+const MOVIES=RAW.trim().split("\n").map((l,i)=>{const[t,y,g,ty,p,yt]=l.split("|");return{id:"m"+i,title:t,year:+y,genre:G[g][0],type:ty=="m"?"movie":"series",poster:p=="-"?"":"https://image.tmdb.org/t/p/w400/"+p+".jpg",yt}});
+const GENRES=Object.values(G).map(([key,icon])=>({key,icon}));
+const HERO=["John Wick","Oppenheimer","Dune","Stranger Things"];
+const HERO_TXT={"John Wick":"O'limga qasamyod qilgan afsonaviy qotilning hikoyasi. Adrenalin va kuchli syujet!","Oppenheimer":"Atom bombasi otasining hayoti va ilmiy kashfiyoti ortidagi og'ir tanlovlar.","Dune":"Cho'l sayyorasida hokimiyat, taqdir va sirli kuchlar uchun kurash.","Stranger Things":"Kichik shaharchada boshlangan g'alati voqealar — do'stlik va noma'lum dunyo."};
+
+/* === YOUTUBE URL'lar === */
+const watchURL=m=>`https://www.youtube.com/watch?v=${m.yt}`;
+const searchURL=m=>`https://www.youtube.com/results?search_query=${encodeURIComponent(m.title+" "+m.year+" full movie")}`;
+const openYT=id=>{const m=byId(id);addHistory(id);window.open(watchURL(m),"_blank","noopener")};
+
+const ls=(k,d)=>{try{return JSON.parse(localStorage.getItem(k))??d}catch(e){return d}};
+let fav=new Set(ls("cv2_fav",[])),hist=ls("cv2_hist",[]),S={view:"home",genre:null,q:"",hero:0,sort:"def",user:ls("cv2_user",null)};
+const byId=id=>MOVIES.find(m=>m.id===id);
+const $=id=>document.getElementById(id);
+const ph=t=>"https://placehold.co/400x600/130d1d/9d92a6?text="+encodeURIComponent(t);
+const big=m=>m.poster?m.poster.replace("w400","original"):ph(m.title);
+const save=()=>{try{localStorage.setItem("cv2_fav",JSON.stringify([...fav]));localStorage.setItem("cv2_hist",JSON.stringify(hist))}catch(e){}};
+
+const NAV=[["home","🏠","Bosh sahifa"],["movies","🎬","Filmlar"],["series","📺","Seriallar"],["genres","🔲","Janrlar"],["favorites","❤️","Sevimlilar"],["history","🕐","Tarix"]];
+function renderNav(){
+  $("mainNav").innerHTML=NAV.map(([k,i,l])=>`<div class="nav-item ${S.view===k?'active':''}" onclick="goTo('${k}')"><span>${i}</span>${l}${k=="favorites"?`<span class="count">${fav.size}</span>`:k=="history"?`<span class="count">${hist.length}</span>`:""}</div>`).join("");
+  $("genreNav").innerHTML=GENRES.map(g=>`<div class="nav-item ${S.view=="genre"&&S.genre==g.key?'active':''}" onclick="openGenre('${g.key}')"><span>${g.icon}</span>${g.key}</div>`).join("");
+  $("mnav").innerHTML=NAV.map(([k,i,l])=>`<div class="chip ${S.view===k?'on':''}" onclick="goTo('${k}')">${i} ${l}</div>`).join("");
+}
+function goTo(v){S.view=v;S.genre=null;S.sort="def";clearSearch(true);scrollTo({top:0,behavior:"smooth"});render()}
+function openGenre(g){S.view="genre";S.genre=g;S.sort="def";clearSearch(true);scrollTo({top:0,behavior:"smooth"});render()}
+
+function card(m){const f=fav.has(m.id);return `<div class="card" onclick="openDetail('${m.id}')">
+  <span class="tag">${m.type=="movie"?"FILM":"SERIAL"}</span>
+  <div class="fb ${f?'on':''}" onclick="toggleFav(event,'${m.id}')">${f?'♥':'♡'}</div>
+  <img src="${m.poster||ph(m.title)}" alt="${m.title}" loading="lazy" onerror="this.onerror=null;this.src='${ph(m.title)}'">
+  <div class="ov"><button class="play" title="YouTube'da ochish" onclick="event.stopPropagation();openYT('${m.id}')">▶</button></div>
+  <div class="info"><b>${m.title}</b><span>${m.year} • ${m.genre}</span></div></div>`}
+const grid=l=>l.length?`<div class="grid">${l.map(card).join("")}</div>`:`<div class="empty"><div class="big">🔍</div>Hech narsa topilmadi<br><button class="btn" onclick="goTo('home')">Bosh sahifa</button></div>`;
+function sorted(l){const a=[...l];if(S.sort=="new")a.sort((x,y)=>y.year-x.year);if(S.sort=="old")a.sort((x,y)=>x.year-y.year);if(S.sort=="az")a.sort((x,y)=>x.title.localeCompare(y.title));return a}
+const sortSel=()=>`<select onchange="S.sort=this.value;render()"><option value="def">Saralash: Oddiy</option><option value="new" ${S.sort=="new"?"selected":""}>Yangi avval</option><option value="old" ${S.sort=="old"?"selected":""}>Eski avval</option><option value="az" ${S.sort=="az"?"selected":""}>A → Z</option></select>`;
+const head=(t,s,x="")=>`<div class="vh"><div><h1>${t}</h1><div class="sub">${s}</div></div>${x}</div>`;
+const chips=base=>`<div class="chips"><div class="chip ${S.view==base?'on':''}" onclick="goTo('${base}')">Barchasi</div>${GENRES.map(g=>`<div class="chip" onclick="openGenre('${g.key}')">${g.icon} ${g.key}</div>`).join("")}</div>`;
+const row=(t,l,go)=>`<section class="sec"><div class="sec-h"><h2>${t}</h2>${go?`<span class="link" onclick="${go}">Barchasi ›</span>`:""}</div><div class="scroller">${l.map(card).join("")}</div></section>`;
+
+function render(){
+  renderNav();const c=$("content");
+  if(S.q){const q=S.q.toLowerCase(),r=MOVIES.filter(m=>m.title.toLowerCase().includes(q)||m.genre.toLowerCase().includes(q)||String(m.year)==q);
+    c.innerHTML=head(`"${S.q}"`,`${r.length} ta natija`)+grid(r);return}
+  if(S.view=="home"){
+    c.innerHTML=`<section class="hero" id="hero"></section>`+row("🔥 Trendda",MOVIES.slice(0,14))+row("📺 Seriallar",MOVIES.filter(m=>m.type=="series").slice(0,14),"goTo('series')")+
+      GENRES.slice(0,5).map(g=>row(g.icon+" "+g.key,MOVIES.filter(m=>m.genre==g.key).slice(0,14),`openGenre('${g.key}')`)).join("");
+    renderHero();return}
+  if(S.view=="movies"||S.view=="series"){const l=MOVIES.filter(m=>m.type==(S.view=="movies"?"movie":"series"));
+    c.innerHTML=head(S.view=="movies"?"Filmlar":"Seriallar",l.length+" ta",sortSel())+chips(S.view)+grid(sorted(l));return}
+  if(S.view=="genres"){c.innerHTML=head("Janrlar","Janr bo'yicha ko'ring")+`<div class="gg">${GENRES.map(g=>`<div class="gt" onclick="openGenre('${g.key}')"><div class="i">${g.icon}</div><b>${g.key}</b><span>${MOVIES.filter(m=>m.genre==g.key).length} ta kontent</span></div>`).join("")}</div>`;return}
+  if(S.view=="genre"){const l=MOVIES.filter(m=>m.genre==S.genre);c.innerHTML=head(S.genre,l.length+" ta kontent",sortSel())+grid(sorted(l));return}
+  if(S.view=="favorites"){const l=MOVIES.filter(m=>fav.has(m.id));c.innerHTML=head("Sevimlilar",l.length+" ta saqlangan")+(l.length?grid(l):`<div class="empty"><div class="big">🤍</div>Hali sevimlilar yo'q<br><button class="btn" onclick="goTo('home')">Filmlarni ko'rish</button></div>`);return}
+  if(S.view=="history"){const l=hist.map(byId).filter(Boolean);c.innerHTML=head("Tarix",l.length+" ta ko'rilgan",l.length?`<span class="link" onclick="hist=[];save();toast('Tarix tozalandi');render()">Tarixni tozalash</span>`:"")+(l.length?grid(l):`<div class="empty"><div class="big">🕐</div>Tarix bo'sh<br><button class="btn" onclick="goTo('home')">Boshlash</button></div>`)}
+}
+
+let ht;
+function renderHero(){
+  const h=$("hero");if(!h)return;
+  h.innerHTML=HERO.map((t,i)=>{const m=MOVIES.find(x=>x.title==t);return `<div class="slide ${i==S.hero?'on':''}"><img src="${big(m)}" alt="${t}" onerror="this.onerror=null;this.src='${ph(t)}'"><div class="hero-in"><span class="badge">✦ Hozir mashhur • ${m.year} • ${m.genre}</span><h1>${t}</h1><p>${HERO_TXT[t]}</p><div class="hero-btns"><button class="btn" onclick="openYT('${m.id}')">▶ YouTube'da ko'rish</button><button class="btn ghost" onclick="openDetail('${m.id}')">ⓘ Batafsil</button><button class="btn ghost ${fav.has(m.id)?'fav':''}" onclick="toggleFav(event,'${m.id}')">${fav.has(m.id)?'♥ Sevimli':'♡ Sevimli'}</button></div></div></div>`}).join("")+`<div class="dots">${HERO.map((_,i)=>`<span class="${i==S.hero?'on':''}" onclick="S.hero=${i};renderHero()"></span>`).join("")}</div>`;
+  clearInterval(ht);ht=setInterval(()=>{S.hero=(S.hero+1)%HERO.length;if(S.view=="home"&&!S.q&&$("hero"))renderHero()},7000);
+}
+
+function openDetail(id){
+  const m=byId(id),f=fav.has(id),sim=MOVIES.filter(x=>x.genre==m.genre&&x.id!=id).slice(0,12);
+  $("detailBox").innerHTML=`<button class="x" onclick="closeDetail()">✕</button>
+  <div class="vid" id="vid"><img src="${big(m)}" onerror="this.onerror=null;this.src='${ph(m.title)}'"><button class="play" onclick="playInline('${id}')">▶</button></div>
+  <div class="det"><h2>${m.title}</h2><div class="meta"><span>${m.year}</span><span>${m.genre}</span><span>${m.type=="movie"?"Film":"Serial"}</span></div>
+  <div class="acts"><a class="btn" href="${watchURL(m)}" target="_blank" rel="noopener" onclick="addHistory('${id}')">▶ YouTube'da ochish</a>
+  <a class="btn ghost" href="${searchURL(m)}" target="_blank" rel="noopener">🔎 To'liq filmni qidirish</a>
+  <button class="btn ghost ${f?'fav':''}" onclick="toggleFav(event,'${id}');openDetail('${id}')">${f?'♥ Sevimlilarda':'♡ Sevimlilarga'}</button></div>
+  <h3>O'xshash ${m.genre.toLowerCase()} kontent</h3><div class="scroller">${sim.map(card).join("")}</div></div>`;
+  $("detail").classList.add("open");$("detailBox").scrollTop=0;
+}
+function playInline(id){const m=byId(id);addHistory(id);const v=$("vid");v.classList.add("live");v.innerHTML=`<iframe src="https://www.youtube.com/embed/${m.yt}?autoplay=1&rel=0" allow="autoplay; encrypted-media; picture-in-picture; fullscreen" allowfullscreen></iframe>`}
+function closeDetail(){$("detail").classList.remove("open");$("detailBox").innerHTML=""}
+$("detail").addEventListener("click",e=>{if(e.target==$("detail"))closeDetail()});
+
+function toggleFav(e,id){e.stopPropagation();if(fav.has(id)){fav.delete(id);toast("Sevimlilardan olib tashlandi")}else{fav.add(id);toast("Sevimlilarga qo'shildi ❤️")}save();
+  if(!$("detail").classList.contains("open")){S.view=="home"?(renderNav(),renderHero(),document.querySelectorAll(".scroller").forEach(()=>{}),rerenderRows()):render()}}
+function rerenderRows(){const y=scrollY;render();scrollTo(0,y)}
+function addHistory(id){hist=[id,...hist.filter(h=>h!=id)].slice(0,30);save();renderNav()}
+function randomMovie(){openDetail(MOVIES[Math.floor(Math.random()*MOVIES.length)].id)}
+
+function openLogin(){if(S.user){toast("Siz "+S.user+" sifatida kirgansiz");return}$("login").classList.add("open")}
+function closeLogin(){$("login").classList.remove("open")}
+$("login").addEventListener("click",e=>{if(e.target==$("login"))closeLogin()});
+function submitLogin(e){e.preventDefault();S.user=$("ln").value.trim()||"Foydalanuvchi";try{localStorage.setItem("cv2_user",JSON.stringify(S.user))}catch(x){}authUI();closeLogin();toast("Xush kelibsiz, "+S.user+"!");return false}
+function authUI(){const b=$("authBtn");b.textContent=S.user?"Chiqish ("+S.user+")":"Kirish";b.onclick=S.user?()=>{S.user=null;try{localStorage.removeItem("cv2_user")}catch(e){}authUI();toast("Tizimdan chiqdingiz")}:openLogin}
+
+$("q").addEventListener("input",function(){S.q=this.value.trim();$("qx").style.display=S.q?"block":"none";render()});
+function clearSearch(silent){$("q").value="";S.q="";$("qx").style.display="none";if(!silent)render()}
+document.addEventListener("keydown",e=>{if(e.key=="Escape"){closeDetail();closeLogin()}});
+let tt;function toast(t){const e=$("toast");e.textContent=t;e.classList.add("show");clearTimeout(tt);tt=setTimeout(()=>e.classList.remove("show"),2200)}
+authUI();render();
+</script>
+</body>
+</html>
